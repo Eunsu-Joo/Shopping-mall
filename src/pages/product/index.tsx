@@ -10,6 +10,7 @@ const ProductPage = () => {
     graphqlFetcher(GET_PRODUCTS)
   );
   if (isLoading) return <div>Loading...</div>;
+  console.log({ data });
   return (
     <div>
       <h1>상품페이지</h1>

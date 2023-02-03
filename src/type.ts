@@ -2,12 +2,18 @@ export type ProductItemProps = {
   category: string;
   description: string;
   id: number;
-  image: string;
+  url: string;
   price: number;
   rating: {
     rate: number;
     count: number;
   };
+  title: string;
+};
+export type CartType = {
+  id: number;
+  url: string;
+  price: number;
   title: string;
 };
 // Omit, Partial, Pick

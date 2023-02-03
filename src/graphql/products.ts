@@ -10,4 +10,14 @@ const GET_PRODUCTS = gql`
     createdAt
   }
 `;
+export const GET_PRODUCT = gql`
+  query GET_PRODUCT {
+    id
+    imageUrl
+    price
+    title
+    description
+    createdAt
+  }
+`;
 export default GET_PRODUCTS;

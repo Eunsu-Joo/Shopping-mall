@@ -9,6 +9,9 @@ const Header = () => {
       <p>
         <Link to={"/product"}>상품페이지</Link>
       </p>
+      <p>
+        <Link to={"/cart"}>장바구니</Link>
+      </p>
     </div>
   );
 };

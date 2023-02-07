@@ -6,6 +6,7 @@ export interface GraphQLRequest {
 }
 
 import { graphql } from "msw";
+import { CartType } from "../type";
 const fakeData = Array.from({ length: 20 }).map((_, i) => ({
   id: i + 1,
   url: `https://placeimg.com/300/150/tech/${i + 1}`,
@@ -29,19 +30,14 @@ export const handlers = [
   }),
 
   graphql.mutation("ADD_CART", (req, res, ctx) => {
-    const newData = { ...cartData };
+    let newData = { ...cartData };
     const id = req.variables.id;
-    if (newData[id]) {
-      newData[id] = {
-        ...newData[id],
-        amount: (newData[id].amount || 0) + 1,
-      };
-    } else {
-      const product = fakeData.find((data) => data.id === +req.variables.id);
-      newData[id] = { ...product, amount: 1 };
-    }
+    const found = fakeData.find((data) => data.id === +req.variables.id);
+    if (!found) throw new Error("상품이 없습니다.");
+    const newItem = { ...found, amount: (newData[id]?.amount || 0) + 1 };
+    newData[id] = newItem;
     cartData = newData;
-    return res(ctx.data(newData));
+    return res(ctx.data(newItem));
   }),
   graphql.query("GET_CART", (req, res, ctx) => {
     return res(ctx.data(cartData));
@@ -50,13 +46,20 @@ export const handlers = [
     const newData = { ...cartData };
     const { id, amount } = req.variables;
     if (!newData[id]) {
-      throw Error("업는 데이터 입니다.");
+      throw Error("없는 데이터 입니다.");
     }
-    newData[id] = {
-      ...newData[id],
-      amount,
-    };
+    const newItem = { ...newData[id], amount };
+    newData[id] = newItem;
     cartData = newData;
-    return res(ctx.data(newData));
+    return res(ctx.data(newItem));
+  }),
+  graphql.mutation("DELETE_CART", ({ variables: { id } }, res, ctx) => {
+    const newData = { ...cartData };
+    if (!newData[id]) {
+      throw Error("삭제할 데이터가 없습니다.");
+    }
+    delete newData[id];
+    cartData = newData;
+    return res(ctx.data(id));
   }),
 ];

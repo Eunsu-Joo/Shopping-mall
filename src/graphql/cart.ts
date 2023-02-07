@@ -17,6 +17,11 @@ export const GET_CART = gql`
     title
   }
 `;
+export const DELETE_CART = gql`
+  mutation DELETE_CART($id: number) {
+    id
+  }
+`;
 export const UPDATE_CART = gql`
   mutation UPDATE_CART($id: number, $amount: number) {
     cart(id: $id, amount: $amount) {

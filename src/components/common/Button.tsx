@@ -13,6 +13,7 @@ const Button = (props: ButtonType) => {
       marginTop: "8px",
       borderRadius: "4px",
       cursor: "pointer",
+      marginLeft: "8px",
     },
   };
   return <button {...attributes}>{children}</button>;

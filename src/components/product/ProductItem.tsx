@@ -1,7 +1,6 @@
-import { ProductItemProps } from "../../type";
+import { ProductItemType } from "../../type";
 import { Link } from "react-router-dom";
 import Button from "../common/Button";
-import { cartsItemSelector } from "../../recoils/cart";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useMutation } from "react-query";
 import QueryKeys from "../../constants/queryKeys";
@@ -16,7 +15,7 @@ const ProductItem = ({
   rating,
   id,
   price,
-}: ProductItemProps) => {
+}: ProductItemType) => {
   const { mutate: addCart } = useMutation((id: number) =>
     graphqlFetcher(ADD_CART, { id })
   );

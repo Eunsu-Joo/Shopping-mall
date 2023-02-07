@@ -1,4 +1,4 @@
-export type ProductItemProps = {
+export type ProductItemType = {
   category: string;
   description: string;
   id: number;
@@ -15,6 +15,7 @@ export type CartType = {
   url: string;
   price: number;
   title: string;
+  amount: number;
 };
 // Omit, Partial, Pick
 
@@ -48,11 +49,11 @@ const testOmit: OmitTest = {
   id: 2,
   // color:"red" //애러
 };
-export type ProductType = {
-  id: string;
-  imageUrl: string;
-  price: number;
-  title: string;
-  description: string;
-  createdAt: string;
-};
+// export type ProductType = {
+//   id: string;
+//   imageUrl: string;
+//   price: number;
+//   title: string;
+//   description: string;
+//   createdAt: string;
+// };

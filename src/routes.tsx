@@ -4,6 +4,7 @@ import DynamicIndex from "./pages/index";
 import DynamicProduct from "./pages/product";
 import DynamicProductId from "./pages/product/[id]";
 import DynamicCart from "./pages/cart";
+import DynamicPayment from "./pages/payment";
 import Layout from "./_layout";
 
 export const routes = [
@@ -15,6 +16,7 @@ export const routes = [
       { path: "/product", element: <DynamicProduct />, index: true },
       { path: "/product/:id", element: <DynamicProductId /> },
       { path: "/cart", element: <DynamicCart /> },
+      { path: "/payment", element: <DynamicPayment /> },
     ],
   },
 ];
@@ -24,4 +26,5 @@ export const pages = [
   { route: "/product" },
   { route: "/product/:id" },
   { route: "/cart" },
+  { route: "/payment" },
 ];

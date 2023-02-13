@@ -7,7 +7,7 @@ export interface GraphQLRequest {
 
 import { graphql } from "msw";
 import { CartType } from "../type";
-import { EXECUTE_PAY } from "../graphql/patment";
+import { EXECUTE_PAY } from "../graphql/payment";
 const fakeData = Array.from({ length: 20 }).map((_, i) => ({
   id: (i + 1).toString(),
   url: `https://picsum.photos/200/300?random=${i + 1}`,

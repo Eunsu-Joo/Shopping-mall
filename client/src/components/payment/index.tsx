@@ -6,7 +6,7 @@ import PaymentModal from "./modal";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "react-query";
 import graphqlFetcher from "../../utils/graphqlFetcher";
-import { EXECUTE_PAY } from "../../graphql/patment";
+import { EXECUTE_PAY } from "../../graphql/payment";
 import QueryKeys from "../../constants/queryKeys";
 
 type ExecutePayRequest = string[];

@@ -1,58 +1,81 @@
-import { ResolverType } from "./types";
+import { Cart, ProductType, ResolverType } from "./types";
+import { DBFile, writeDB } from "../dbController";
+import { CartType } from "client/src/type";
+import { GraphQLError } from "graphql/error";
 
-const fakeData = Array.from({ length: 20 }).map((_, i) => ({
-  id: (i + 1).toString(),
-  url: `https://picsum.photos/200/300?random=${i + 1}`,
-  price: Math.floor(Math.random() * 300),
-  title: "제목입니다.",
-  description: "설명입니다.",
-  createdAt: new Date().toString(),
-}));
-let cartData = [
-  { id: "1", amount: 1 },
-  { id: "2", amount: 2 },
-];
+const setJSON = (data: Cart) => writeDB(DBFile.CART, data);
 const cartResolver: ResolverType = {
   Query: {
-    cart: (parent, args, context, info) => {
-      return cartData;
+    cart: (parent, args, { db }, info) => {
+      //얘가 자동으로 parent 가 되는건가..?
+      return db.cart;
     },
   },
   Mutation: {
-    addCart: (parent, { id }, context, info) => {
-      let newData = { ...cartData };
-      const found = fakeData.find((data) => data.id === id);
-      if (!found) throw new Error("상품이 없습니다.");
-      const newItem = { ...found, amount: (newData[id]?.amount || 0) + 1 };
-      newData[id] = newItem;
-      cartData = newData;
+    addCart: (parent, { id }, { db }) => {
+      if (!id) throw new Error("상품이 없습니다.");
+      const targetProduct = db.products.find(
+        (data: ProductType) => data.id === id
+      );
+      if (!targetProduct) throw new Error("상품이 없습니다.");
+      const existCartIndex = db.cart.findIndex((item) => item.id === id);
+      if (existCartIndex > -1) {
+        const newCartItem = {
+          ...db.cart[existCartIndex],
+          amount: db.cart[existCartIndex].amount + 1,
+        };
+        db.cart.splice(existCartIndex, 1, newCartItem);
+        setJSON(db.cart);
+        return newCartItem;
+      }
+      const newItem = {
+        id,
+        amount: 1,
+        product: targetProduct,
+      };
+      db.cart.push(newItem);
+      setJSON(db.cart);
       return newItem;
     },
-    updateCart: (parent, { id, amount }, context, info) => {
-      let newData = { ...cartData };
-      if (!newData[id]) {
-        throw Error("없는 데이터 입니다.");
-      }
-      const newItem = { ...newData[id], amount };
-      newData[id] = newItem;
-      cartData = newData;
-      return newItem;
+    updateCart: (parent, { id, amount }, { db }) => {
+      const target = db.cart.find((cart) => cart.id === id);
+      if (!id || !target) throw new Error("상품이 없습니다.");
+      const newCartItem = { ...target, amount };
+      const existCartIndex = db.cart.indexOf(target);
+      if (newCartItem.amount > 100)
+        throw new GraphQLError("100자 이하로 담아주세요.", {
+          extensions: { code: "BAD_REQUEST" },
+        });
+      db.cart.splice(existCartIndex, 1, newCartItem);
+      setJSON(db.cart);
+      return newCartItem;
     },
-    deleteCart: (parent, { id }, context, info) => {
-      const newData = { ...cartData };
-      if (!newData[id]) {
-        throw Error("삭제할 데이터가 없습니다.");
-      }
-      delete newData[id];
-      cartData = newData;
+    deleteCart: (parent, { id }, { db }) => {
+      const existCartIndex = db.cart.findIndex((cart) => cart.id === id);
+      if (existCartIndex < 0) throw new Error("없는 데이터 입니다.");
+      db.cart.splice(existCartIndex, 1);
+      setJSON(db.cart);
       return id;
     },
-    executePay: (parent, { ids }, context, info) => {
-      const newCartData = cartData.filter(
-        (cartItem) => !ids.includes(cartItem.id)
-      );
-      cartData = newCartData;
+    executePay: (parent, { ids }, { db }) => {
+      const newCartData = db.cart.filter((cart: CartType) => {
+        return !ids.includes(cart.id);
+      });
+      db.cart = newCartData;
+      setJSON(db.cart);
       return ids;
+    },
+  },
+  CartItem: {
+    //     type CartItem {
+    //   id: ID!
+    //   product: Product!
+    //   amount: Int!
+    // }
+    //요거때문에 접근이 가능한거임
+    //CartItem 을 호출하고, product에 접근했을 때 return으로 받을 함수 resolver
+    product: (cartItem, args, { db }) => {
+      return db.products.find((product) => product.id === cartItem.id);
     },
   },
 };

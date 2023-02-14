@@ -17,5 +17,5 @@ export const readDB = (target: DBFile) => {
 };
 //write file
 export const writeDB = (target: DBFile, data: any) => {
-  return JSON.stringify(fs.writeFileSync(filenames[target], data));
+  return fs.writeFileSync(filenames[target], JSON.stringify(data));
 };

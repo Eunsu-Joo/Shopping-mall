@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CartType } from "../../type";
+import { CartsType, CartType, ProductType } from "../../type";
 import { useMutation, useQueryClient } from "react-query";
 import graphqlFetcher from "../../utils/graphqlFetcher";
 import { DELETE_CART, UPDATE_CART } from "../../graphql/cart";
@@ -8,10 +8,11 @@ import QueryKeys from "../../constants/queryKeys";
 import Button from "../common/Button";
 import React from "react";
 const CartItem = (
-  { id, price, url, title, amount }: CartType,
+  { id, product, amount }: CartType,
   ref: ForwardedRef<HTMLInputElement>
 ) => {
   const queryClient = useQueryClient();
+  const { price, title, imageUrl } = product as ProductType;
   const { mutate: updateCart } = useMutation(
     ({ id, amount }: { id: string; amount: number }) =>
       graphqlFetcher(UPDATE_CART, { id, amount }),
@@ -21,27 +22,43 @@ const CartItem = (
       // },
       //  서버에 값을 보내기 전에 미리 snapshot을 치는 부분 => onMutate
       onMutate: async ({ id, amount }) => {
-        const prevData = queryClient.getQueryData<{ [key: string]: CartType }>([
+        const prevData = queryClient.getQueryData<{ cart: CartsType }>([
           QueryKeys.CART,
         ]);
-        if (!prevData?.id) return;
+        const existCartItem = prevData?.cart.find((cart) => cart.id === id);
+        if (!existCartItem) return;
         const newData = {
-          ...(prevData || {}),
-          [id]: { ...prevData[id], amount },
+          ...existCartItem,
+          amount,
         };
-        queryClient.setQueryData([QueryKeys.CART], newData);
+
+        //
+        queryClient.setQueryData([QueryKeys.CART], {
+          cart: prevData!.cart.map((cart) => (cart.id === id ? newData : cart)),
+        });
         return prevData;
       },
-      onSuccess: (newValue) => {
-        const prevCart = queryClient.getQueryData([QueryKeys.CART]);
-        const newCart = {
-          ...(prevCart || {}),
-          [id]: newValue,
-        };
-        // 이렇게 할 경우 요청을 2번 함. get_cart, update_cart
-        // QueryKeys.CART = get_cart 쿼리를 무효화 함으로 다시요청하기에 2번 요청을 하게 됨.
+      onSuccess: ({ updateCart }) => {
+        const prevData = queryClient.getQueryData<{ cart: CartsType }>([
+          QueryKeys.CART,
+        ]);
+        queryClient.setQueryData([QueryKeys.CART], {
+          cart: prevData!.cart.map((cart) =>
+            cart.id === id ? updateCart : cart
+          ),
+        });
+        // const newCart = {
+        //   ...(prevCart || {}),
+        //   [id]: newValue,
+        // };
+        // // 이렇게 할 경우 요청을 2번 함. get_cart, update_cart
+        // // QueryKeys.CART = get_cart 쿼리를 무효화 함으로 다시요청하기에 2번 요청을 하게 됨.
+        // //
 
-        queryClient.setQueryData([QueryKeys.CART], newCart);
+        // queryClient.setQueryData([QueryKeys.CART], { cart: newCart });
+      },
+      onError: (error, variables, context) => {
+        return alert("100개 이하로 입력하세요.");
       },
     }
   );
@@ -73,7 +90,7 @@ const CartItem = (
         <img
           width={300}
           height={150}
-          src={url}
+          src={imageUrl}
           alt={title}
           style={{ objectFit: "cover", marginBottom: "8px" }}
         />

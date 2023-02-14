@@ -1,34 +1,42 @@
 import gql from "graphql-tag";
 
 export const ADD_CART = gql`
-  mutation ADD_CART($id: String) {
-    id
-    imageUrl
-    price
-    title
+  mutation ADD_CART($id: ID!) {
+    addCart(id: $id) {
+      id
+      amount
+    }
   }
 `;
 
 export const GET_CART = gql`
   query GET_CART {
-    id
-    imageUrl
-    price
-    title
+    cart {
+      product {
+        imageUrl
+        price
+        title
+      }
+      amount
+      id
+    }
   }
 `;
 export const DELETE_CART = gql`
-  mutation DELETE_CART($id: String) {
-    id
+  mutation DELETE_CART($id: ID!) {
+    deleteCart(id: $id)
   }
 `;
 export const UPDATE_CART = gql`
-  mutation UPDATE_CART($id: String, $amount: Int) {
-    cart(id: $id, amount: $amount) {
+  mutation UPDATE_CART($id: ID!, $amount: Int!) {
+    updateCart(id: $id, amount: $amount) {
       id
-      imageUrl
-      price
-      title
+      amount
+      product {
+        imageUrl
+        price
+        title
+      }
     }
   }
 `;

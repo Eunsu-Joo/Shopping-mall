@@ -11,11 +11,11 @@ import {
 } from "react";
 import { useRecoilState } from "recoil";
 import { checkedCartState } from "../../recoils/cart";
-import { CartType } from "../../type";
+import { CartsType, CartType } from "../../type";
 import WillPay from "../willPay";
 import { useNavigate } from "react-router-dom";
 
-const CartList = ({ items }: { items: CartType[] }) => {
+const CartList = ({ items }: { items: CartsType }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<FormData>();
   const [checkedState, setCheckedState] = useRecoilState(checkedCartState);
@@ -47,7 +47,7 @@ const CartList = ({ items }: { items: CartType[] }) => {
       document.querySelector<HTMLInputElement>("#selected_all");
     checkedState.forEach((state) => {
       const itemRef = checkboxRefs.find(
-        (ref) => +ref.current!.value === state.id
+        (ref) => ref.current!.value === state.id
       );
       if (itemRef) itemRef.current!.checked = true;
     });

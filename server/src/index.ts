@@ -2,9 +2,17 @@ import { DBFile, readDB } from "./dbController";
 import { ApolloServer } from "apollo-server-express";
 import schema from "./schema";
 import resolvers from "./resolvers";
+import { GraphQLError } from "graphql/index";
 
 const express = require("express");
-
+const formatError = (err: GraphQLError) => {
+  console.error("--- GraphQL Error ---");
+  console.error("Path:", err.path);
+  console.error("Message:", err.message);
+  console.error("Code:", err.extensions.code);
+  console.error("Original Error", err.originalError);
+  return err;
+};
 (async () => {
   const server = new ApolloServer({
     typeDefs: schema,
@@ -15,6 +23,8 @@ const express = require("express");
         cart: readDB(DBFile.CART),
       },
     },
+    debug: false,
+    formatError,
   });
 
   const app = express();
@@ -29,6 +39,5 @@ const express = require("express");
     },
   });
   await app.listen({ port: 8000 });
-  console.log(readDB(DBFile.PRODUCTS));
   console.log("server listening on 8000.,..");
 })();

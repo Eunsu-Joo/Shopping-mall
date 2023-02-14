@@ -6,14 +6,17 @@ import { CartType } from "../../type";
 import CartList from "../../components/cart/CartList";
 
 const Cart = () => {
-  let { data } = useQuery([QueryKeys.CART], () => graphqlFetcher(GET_CART), {
-    staleTime: 0,
-  });
-  if (!data) return <p>Loading..</p>;
-  const newData: CartType[] = Object.values(data);
+  let { data, isLoading } = useQuery(
+    [QueryKeys.CART],
+    () => graphqlFetcher(GET_CART),
+    {
+      staleTime: 0,
+    }
+  );
+  if (isLoading) return <p>Loading..</p>;
   return (
     <>
-      <CartList items={newData} />
+      <CartList items={data?.cart || []} />
     </>
   );
 };

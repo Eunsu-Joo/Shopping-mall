@@ -15,7 +15,7 @@ const Payment = () => {
     useRecoilState(checkedCartState);
   const queryClient = useQueryClient();
   const { mutate: executePay } = useMutation(
-    (payInfo: ExecutePayRequest) => graphqlFetcher(EXECUTE_PAY, { payInfo }),
+    (ids: ExecutePayRequest) => graphqlFetcher(EXECUTE_PAY, { ids }),
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries([QueryKeys.CART]);
@@ -28,8 +28,8 @@ const Payment = () => {
     setShow((prev) => !prev);
   };
   const handlePayment = () => {
-    const payInfo = checkedCartData.map(({ id }) => id);
-    executePay(payInfo);
+    const ids = checkedCartData.map(({ id }) => id);
+    executePay(ids);
     setCheckedCartData([]);
     alert("결제가 완료되었습니다.");
     navigator("/products", { replace: true });

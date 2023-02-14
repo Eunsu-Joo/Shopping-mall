@@ -7,7 +7,6 @@ const productsSchema = gql`
     price: Int!
     title: String!
     description: String!
-    createdAt: Float! #graphql에서 Int 자리수 제한있음.
   }
   extend type Query {
     products: [Product!]

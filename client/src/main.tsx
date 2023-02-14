@@ -6,7 +6,7 @@ import "./index.scss";
 import { worker } from "./mocks/browser";
 import { RecoilRoot } from "recoil";
 // vite에서 dev 모드 확인하는 환경변수
-if (import.meta.env.DEV) {
+if (JSON.parse(import.meta.env.VITE_USE_MOCK)) {
   worker.start();
 }
 

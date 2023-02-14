@@ -1,22 +1,19 @@
-export type ProductItemType = {
-  category: string;
-  description: string;
-  id: number;
-  url: string;
-  price: number;
-  rating: {
-    rate: number;
-    count: number;
-  };
-  title: string;
-};
 export type CartType = {
   id: string;
-  url: string;
-  price: number;
-  title: string;
+  product: ProductType;
   amount: number;
 };
+
+export type ProductType = {
+  id: string;
+  imageUrl: string;
+  price: number;
+  title: string;
+  description: string;
+  createdAt: string;
+};
+export type ProductsType = ProductType[];
+export type CartsType = CartType[];
 // Omit, Partial, Pick
 
 type Test = {
@@ -49,11 +46,3 @@ const testOmit: OmitTest = {
   id: 2,
   // color:"red" //애러
 };
-// export type ProductType = {
-//   id: string;
-//   imageUrl: string;
-//   price: number;
-//   title: string;
-//   description: string;
-//   createdAt: string;
-// };

@@ -1,7 +1,7 @@
-import { ProductItemType } from "../../type";
+import { ProductsType } from "../../type";
 import ProductItem from "./ProductItem";
 
-const ProductList = ({ list }: { list: ProductItemType[] }) => {
+const ProductList = ({ list }: { list: ProductsType }) => {
   return (
     <>
       <ul className={"grid"}>

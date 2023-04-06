@@ -12,6 +12,9 @@ const Header = () => {
       <p>
         <Link to={"/cart"}>장바구니</Link>
       </p>
+      <p>
+        <Link to={"/admin"}>어드민</Link>
+      </p>
     </div>
   );
 };

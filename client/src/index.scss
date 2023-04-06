@@ -82,6 +82,12 @@ padding: 8px 4px;
     cursor: pointer;
     margin-left: 8px;
     min-width: 120px;
+    border: 0;
+    &:disabled{
+        cursor: default;
+        background-color: #999999;
+        color: gray;
+    }
 }
 .modal{
     background-color: rgba(0,0,0,0.4);
@@ -113,4 +119,29 @@ padding: 8px 4px;
         font-size: 22px;
         margin-bottom: 16px;
     }
+}
+.label{
+    display: block;
+    width: 100%;
+    //outline: 1px solid black;
+    margin-bottom: 16px;
+    font-size: 18px;
+    p{
+        margin-bottom: 8px;
+    }
+    input[type='text']{
+        width: 100%;
+        padding: 8px 0;
+        text-indent: 8px;
+    }
+    textarea{
+        text-indent: 8px;
+        width: 100%;
+        padding-top: 8px;
+    }
+}
+.image{
+    width: 400px;
+    height: 300px;
+    object-fit: cover;
 }

@@ -19,6 +19,14 @@ const productsSchema = gql`
       price: Int!
       description: String!
     ): Int!
+    updateProduct(
+      title: String!
+      imageUrl: String!
+      price: Int!
+      description: String!
+      id: ID!
+    ): Int!
+    deleteProduct(id: ID!): Int!
   }
 `;
 export default productsSchema;

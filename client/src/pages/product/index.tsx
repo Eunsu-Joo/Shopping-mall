@@ -1,14 +1,12 @@
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import QueryKeys from "../../constants/queryKeys";
 import graphqlFetcher from "../../utils/graphqlFetcher";
 import GET_PRODUCTS from "../../graphql/products";
-import NoResult from "../../components/common/NoResult";
 import ProductList from "../../components/product/list";
 import { ProductsType } from "../../type";
-import Button from "../../components/common/Button";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { hasNextPage } from "react-query/types/core/infiniteQueryBehavior";
+import { useEffect, useRef } from "react";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
+
 const ProductPage = () => {
   const fetchMoreRef = useRef<HTMLDivElement>(null);
   const intersecting = useInfiniteScroll(fetchMoreRef);
@@ -24,12 +22,13 @@ const ProductPage = () => {
           //nextPage에 필요한 값을(params) return 해주는 역활
           // 요청을 할때마다 자동으로 실행할꺼임 return 값이 pageParam이 되는거임.
           // return index, id 등등
-          return lastPage.products.at(-1)?.id;
+          return lastPage.products.at(-1)?.id; // 마지막 item ID = pageParam
         },
         getPreviousPageParam: (firstPage, allPages) => {},
       }
     );
   useEffect(() => {
+    console.log(intersecting);
     if (!intersecting) return;
     if (!intersecting || !isSuccess || isFetchingNextPage || !hasNextPage)
       return;

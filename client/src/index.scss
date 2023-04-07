@@ -19,17 +19,23 @@ ul,li,ol{
 }
 .listItem {
     display: flex;
-    border: 1px solid black;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 400px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border-radius: 8px;
 }
 .header{
     width: 1200px;
     margin: 0 auto;
     display: flex;
     padding: 32px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
 }
 .header p{
     width: 50%;
@@ -40,11 +46,12 @@ ul,li,ol{
     display: grid;
     grid-template-columns: repeat(3,1fr);
     width: 100%;
-    gap: 10px;
+    gap: 16px;
 }
 .container{
     width: 1200px;
     margin: 0 auto;
+    padding-top: 80px;
 }
 .empty{
     width: 100%;
@@ -144,4 +151,33 @@ padding: 8px 4px;
     width: 400px;
     height: 300px;
     object-fit: cover;
+}
+.link{
+    text-decoration: underline;
+    font-size: 22px;
+}
+.adminList {
+    margin-top: 45px;
+}
+.adminItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin-bottom: 24px;
+    border-radius: 8px;
+    div{
+        display: flex;
+        align-items: center;
+        img{
+            width: 200px;
+            height: 100px;
+            object-fit: cover;
+            margin: 0 24px;
+        }
+        p{
+            font-weight: 600;
+        }
+    }
 }

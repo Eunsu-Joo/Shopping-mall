@@ -1,71 +1,57 @@
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  FormEvent,
-  SyntheticEvent,
-  useState,
-} from "react";
-import { useMutation, useQueryClient } from "react-query";
-import graphqlFetcher from "../../utils/graphqlFetcher";
-import { UPDATE_PRODUCT } from "../../graphql/products";
-import QueryKeys from "../../constants/queryKeys";
-import { useNavigate } from "react-router-dom";
+import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
+import axios from "axios";
 
-const AdminForm = () => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const { mutate } = useMutation(
-    (forms: any) => graphqlFetcher(UPDATE_PRODUCT, { ...forms }),
-    {
-      onSuccess: async (data) => {
-        await queryClient.invalidateQueries([QueryKeys.PRODUCTS]);
-        console.log(data);
-        // if (confirm("등록되었습니다.")) {
-        //   return navigate("/products");
-        // }
-      },
-    }
-  );
-  const [forms, setForms] = useState({
-    title: "",
-    price: "",
-    description: "",
-  });
-  const [image, setImage] = useState<{
-    preview: string | ArrayBuffer | null;
-    url: string;
-  }>({
-    preview: "",
-    url: "",
-  });
+export type FormType = {
+  id?: string;
+  imageUrl: string;
+  price: string;
+  title: string;
+  description: string;
+};
+
+type AdminFormProps = {
+  handleSubmit: (event: FormEvent) => void;
+  forms: FormType;
+  setForms: Dispatch<SetStateAction<FormType>>;
+  preview: string | ArrayBuffer | null;
+  setPreview: Dispatch<SetStateAction<string | ArrayBuffer | null>>;
+};
+
+const AdminForm = ({
+  forms,
+  handleSubmit,
+  setForms,
+  preview,
+  setPreview,
+}: AdminFormProps) => {
   const onChange = (event: any) => {
     const { value, name } = event.target;
     setForms({ ...forms, [name]: value });
   };
-
-  const onChangeImage = (event: ChangeEvent<HTMLInputElement>) => {
+  const onChangeImage = async (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return alert("파일을 찾을 수 없습니다.");
     const file = event.target.files[0] as File;
-    if (!/([^\s]+(?=\.(jpg|png))\.\2)/.test(file.name))
+    if (!/([^\s]+(?=\.(jpg|png|jpeg|PNG|JPG))\.\2)/.test(file.name))
       return alert("PNG,JPG 이미지만 업로드 가능합니다.");
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setImage({ ...image, preview: reader.result });
+      setPreview(reader.result);
     };
-  };
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    if (!/^[0-9]+$/.test(forms.price)) {
-      return alert("가격은 숫자만 입력 가능합니다.");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "ml_default");
+    const { data, status } = await axios.post(
+      `https://api.cloudinary.com/v1_1/diuiwn91v/image/upload`,
+      formData
+    );
+    if (status === 200) {
+      setForms({ ...forms, imageUrl: data.url });
+    } else {
+      return alert("이미지 로드 애러가 났습니다.");
     }
-    mutate({
-      ...forms,
-      price: +forms.price,
-      imageUrl: "https://picsum.photos/200/300?random=2",
-    });
-    //https://picsum.photos/200/300?random=2
   };
+
   return (
     <>
       <form onSubmit={handleSubmit} autoComplete={"off"}>
@@ -89,12 +75,10 @@ const AdminForm = () => {
             onChange={onChange}
           />
         </label>
-        {image.preview && (
-          <img src={image.preview as string} className={"image"} alt="" />
-        )}
+        {preview && <img src={preview as string} className={"image"} alt="" />}
         <label className={"label"}>
           <p>Image</p>
-          <input type="file" onChange={onChangeImage} value={image.url} />
+          <input type="file" onChange={onChangeImage} />
         </label>
         <label className={"label"}>
           <p>Description</p>
@@ -110,7 +94,7 @@ const AdminForm = () => {
         <input
           type="submit"
           disabled={
-            !forms.price || !forms.title || !forms.description || !image.preview
+            !forms.price || !forms.title || !forms.description || !preview
           }
           value={"Submit"}
           className={"button"}

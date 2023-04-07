@@ -23,8 +23,8 @@ export const GET_PRODUCT = gql`
   }
 `;
 
-export const UPDATE_PRODUCT = gql`
-  mutation UPDATE_PRODUCT(
+export const ADD_PRODUCT = gql`
+  mutation ADD_PRODUCT(
     $imageUrl: String!
     $price: Int!
     $title: String!
@@ -38,4 +38,28 @@ export const UPDATE_PRODUCT = gql`
     )
   }
 `;
+
+export const UPDATE_PRODUCT = gql`
+  mutation UPDATE_PRODUCT(
+    $imageUrl: String!
+    $price: Int!
+    $title: String!
+    $description: String!
+    $id: ID!
+  ) {
+    updateProduct(
+      imageUrl: $imageUrl
+      title: $title
+      price: $price
+      description: $description
+      id: $id
+    )
+  }
+`;
+export const DELETE_PRODUCT = gql`
+  mutation DELETE_PRODUCT($id: ID!) {
+    deleteProduct(id: $id)
+  }
+`;
+
 export default GET_PRODUCTS;

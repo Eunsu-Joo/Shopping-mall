@@ -7,6 +7,7 @@ const setJSON = (data: Cart) => writeDB(DBFile.CART, data);
 const cartResolver: ResolverType = {
   Query: {
     cart: (parent, args, { db }, info) => {
+      console.log(db.cart);
       //얘가 자동으로 parent 가 되는건가..?
       return db.cart;
     },

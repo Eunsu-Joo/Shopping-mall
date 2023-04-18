@@ -19,9 +19,7 @@ const formatError = (err: GraphQLError) => {
     resolvers,
     context: {
       db: {
-        products: readDB(DBFile.PRODUCTS).sort(
-          (a: any, b: any) => +b.id - +a.id
-        ),
+        products: readDB(DBFile.PRODUCTS).reverse(),
         cart: readDB(DBFile.CART),
       },
     },

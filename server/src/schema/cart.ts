@@ -1,6 +1,14 @@
 import { gql } from "apollo-server-express";
 
 const cartSchema = gql`
+  type Product {
+    id: ID!
+    imageUrl: String!
+    price: Int!
+    title: String!
+    description: String!
+    createdAt: String
+  }
   type CartItem {
     id: ID!
     product: Product!

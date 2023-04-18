@@ -3,25 +3,26 @@ import Button from "../common/Button";
 import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "react-query";
 import graphqlFetcher from "../../utils/graphqlFetcher";
-import { DELETE_PRODUCT } from "../../graphql/products";
+import { DELETE_HIDE_PRODUCT } from "../../graphql/products";
 import QueryKeys from "../../constants/queryKeys";
 
 const AdminItem = ({ id, title, imageUrl }: ProductType) => {
   const queryClient = useQueryClient();
   const { mutate } = useMutation(
-    ({ id }: { id: number }) => {
-      return graphqlFetcher(DELETE_PRODUCT, { id });
+    ({ id }: { id: string }) => {
+      return graphqlFetcher(DELETE_HIDE_PRODUCT, { id });
     },
     {
       onSuccess: async () => {
         if (confirm("삭제에 성공했습니다.")) {
-          await queryClient.invalidateQueries([QueryKeys.PRODUCTS]);
+          await queryClient.invalidateQueries([QueryKeys.ADMIN, "all"]);
+          await queryClient.invalidateQueries([QueryKeys.ADMIN, "deleted"]);
         }
       },
     }
   );
   const onClick = () => {
-    mutate({ id: +id });
+    mutate({ id });
   };
   return (
     <li className={"adminItem"}>

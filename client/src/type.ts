@@ -10,6 +10,7 @@ export type ProductType = {
   price: number;
   title: string;
   description: string;
+  createdAt?: number;
 };
 export type ProductsType = ProductType[];
 export type CartsType = CartType[];

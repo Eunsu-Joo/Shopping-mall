@@ -15,7 +15,10 @@ const ProductPage = () => {
     useInfiniteQuery<{ products: ProductsType }>(
       [QueryKeys.PRODUCTS],
       ({ pageParam = "" }) => {
-        return graphqlFetcher(GET_PRODUCTS, { cursor: pageParam });
+        return graphqlFetcher(GET_PRODUCTS, {
+          cursor: pageParam,
+          showDeleted: false,
+        });
       },
       {
         getNextPageParam: (lastPage, allPages) => {

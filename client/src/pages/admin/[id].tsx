@@ -15,17 +15,22 @@ const AdminEdit = () => {
     [QueryKeys.PRODUCT, id],
     () => graphqlFetcher(GET_PRODUCT, { id })
   );
-
   const { mutate, isLoading } = useMutation(
     (forms: ProductType) => {
-      return graphqlFetcher(UPDATE_PRODUCT, { ...forms });
+      return graphqlFetcher(UPDATE_PRODUCT, {
+        ...forms,
+        updateProductId: id,
+      });
     },
     {
-      onSuccess: async () => {
+      onSuccess: async (data) => {
+        console.log(data);
         if (confirm("수정이 완료되었습니다.")) {
-          await queryClient
-            .invalidateQueries([QueryKeys.PRODUCTS])
-            .then(() => queryClient.invalidateQueries([QueryKeys.PRODUCT, id]));
+          if (!data.createdAt)
+            await queryClient.invalidateQueries([QueryKeys.ADMIN, "deleted"]);
+          await queryClient.invalidateQueries([QueryKeys.ADMIN, "all"]);
+          await queryClient.invalidateQueries([QueryKeys.PRODUCTS]);
+          await queryClient.invalidateQueries([QueryKeys.PRODUCTS, id]);
           navigator("/admin");
         }
       },

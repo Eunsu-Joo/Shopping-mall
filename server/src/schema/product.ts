@@ -7,9 +7,10 @@ const productsSchema = gql`
     price: Int!
     title: String!
     description: String!
+    createdAt: String
   }
   extend type Query {
-    products(cursor: ID): [Product!]
+    products(cursor: String, showDeleted: Boolean, filter: String): [Product!]
     product(id: ID!): Product
   }
   extend type Mutation {
@@ -18,15 +19,16 @@ const productsSchema = gql`
       imageUrl: String!
       price: Int!
       description: String!
-    ): Int!
+    ): Product!
     updateProduct(
-      title: String!
-      imageUrl: String!
-      price: Int!
-      description: String!
       id: ID!
-    ): Int!
-    deleteProduct(id: ID!): Int!
+      title: String
+      imageUrl: String
+      price: Int
+      description: String
+    ): Product!
+    deleteProduct(id: ID!): ID!
+    deleteHideProduct(id: ID!): ID!
   }
 `;
 export default productsSchema;

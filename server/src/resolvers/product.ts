@@ -88,84 +88,163 @@
 //   },
 // };
 // export default productResolver;
-import { ProductType, ResolverType } from "./types";
-import { v4 as uuid } from "uuid";
+import { Cart, ProductType, ResolverType } from "./types";
 import { DBFile, writeDB } from "../dbController";
+import { db } from "../../firebase";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  serverTimestamp,
+  startAfter,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import firebase from "firebase/compat";
+import DocumentData = firebase.firestore.DocumentData;
 
+const PAGE_SIZE = 8;
 const setJSON = (data: ProductType[]) => writeDB(DBFile.PRODUCTS, data);
+const setCart = (data: Cart) => writeDB(DBFile.CART, data);
 const productResolver: ResolverType = {
   Query: {
-    products: (
+    products: async (
       parent,
-      { cursor = "", showDeleted = false, filter = "" },
-      { db },
+      { cursor = "", showDeleted = false, filter },
       info
     ) => {
       //Admin에서는 다 보여주고, 일반 페이지에서는 createdAt이 있는 것들만 보여주기.
-      let filterDB = showDeleted
-        ? db.products
-        : db.products.filter((item) => !!item.createdAt);
-      if (filter === "deleted")
-        filterDB = db.products.filter((item) => !item.createdAt);
-      const fromIndex = filterDB.findIndex((p) => p.id === cursor) + 1;
-      return filterDB.slice(fromIndex, fromIndex + 15) || [];
+      //context 에 담긴 DB 필요할때마다 불러오기.
+      const products = collection(db, "products"); //products collection
+      let queryOptions: any[] = [orderBy("createdAt", "desc")]; //filterOptions
+      if (cursor) {
+        const snapshot = await getDoc(doc(db, "products", cursor));
+        queryOptions.push(startAfter(snapshot));
+      }
+
+      /**
+       * cursor 기본값 ="" (초기 진입했을 때) => 조건에 들어오지 않음
+       * cursor 로 마지막 아이템 ID가 들어왔을 때 => 조건에 들어옴.
+       * => queryOptions= [orderBy("createdAt", "desc"),startAfter(cursor)]
+       *  @see 질문
+       *  @question 들어오는 값은 해당 아이템의 ID 인데, 기준은 createdAt이 되는것 아닌가요?
+       * */
+      if (!showDeleted) {
+        queryOptions.unshift(where("createdAt", "!=", null));
+      }
+      if (filter === "deleted") {
+        queryOptions = [where("createdAt", "==", null)];
+      }
+      // showDeleted 가 아닐경우 모두 다 보여줌. (이 조건이 젤 처음 적용 됨)
+      const q = query(products, ...queryOptions, limit(PAGE_SIZE));
+      const snapshot = await getDocs(q);
+      const data: DocumentData[] = [];
+      snapshot.forEach((doc) => {
+        // ID가 없기떄문에 강제로 ID 넣어줌.
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt
+            ? doc.data().createdAt.toDate()
+            : null,
+        });
+      });
+      console.log(data, cursor);
+      return data;
     },
-    product: (parent, { id }, { db }, info) => {
-      const product = db.products.find((data) => data.id === id);
-      if (product) return product;
-      return null;
+    product: async (parent, { id }) => {
+      const snapshot = await getDoc(doc(db, "products", id));
+      return {
+        ...snapshot.data(),
+        id: snapshot.id,
+      };
     },
   },
   Mutation: {
-    addProduct: (
+    addProduct: async (
       parent,
       { imageUrl, price, title, description },
-      { db },
       info
     ) => {
+      const products = collection(db, "products"); //DB
       const newProduct = {
-        id: uuid(),
         price,
         title,
         imageUrl,
         description,
-        createdAt: Date.now(),
       };
-      db.products.unshift(newProduct);
-      setJSON(db.products);
-      return newProduct;
+      const newData = await addDoc(products, {
+        ...newProduct,
+        createdAt: serverTimestamp(),
+      });
+      const test = await getDoc(doc(db, "products", newData.id));
+      return { ...test.data(), id: newData.id };
     },
-    updateProduct: (parent, { id, ...data }, { db }) => {
-      const existedIndex = db.products.findIndex((item) => item.id === id);
-      if (existedIndex < 0) {
-        throw new Error("존재하지 않는 상품입니다.");
-      }
-      const newData = {
-        ...db.products[existedIndex],
-        ...data,
-      };
-      db.products.splice(existedIndex, 1, newData);
-      setJSON(db.products);
-      return newData;
+    updateProduct: async (parent, { id, ...data }) => {
+      // const existedIndex = db.products.findIndex((item) => item.id === id);
+      // if (existedIndex < 0) {
+      //   throw new Error("존재하지 않는 상품입니다.");
+      // }
+      // const newData = {
+      //   ...db.products[existedIndex],
+      //   ...data,
+      // };
+      // db.products.splice(existedIndex, 1, newData);
+      // setJSON(db.products);
+      // return newData;
+      // const test = await getDoc(doc(db, "products", id));
+      const product = doc(db, "products", id);
+      if (!product) throw new Error("상품이 없습니다.");
+      await updateDoc(product, data);
+      const updatedData = await getDoc(product);
+      return { ...updatedData.data(), id };
     },
-    deleteProduct: (parent, { id }, { db }) => {
-      const existedIndex = db.products.findIndex((item) => item.id === id);
-      if (existedIndex < 0) {
-        throw new Error("존재하지 않는 상품입니다.");
+    deleteProduct: async (parent, { id }) => {
+      // const existedIndex = db.products.findIndex((item) => item.id === id),
+      //   existedCartIndex = db.cart.findIndex((item) => item.id === id);
+      // if (existedIndex || existedCartIndex < 0) {
+      //   throw new Error("존재하지 않는 상품입니다.");
+      // }
+      //
+      // if (existedCartIndex > -1) {
+      //   db.cart.splice(existedCartIndex, 1);
+      //   setCart(db.cart);
+      // }
+      // const updatedItem = { ...db.products[existedIndex] };
+      // delete updatedItem.createdAt;
+      // db.products.splice(existedIndex, 1, updatedItem);
+      // setJSON(db.products);
+      //해당 아이디가 cart에 있는지 확인
+
+      const productRef = doc(db, "products", id);
+      const cartCollection = collection(db, "cart");
+      const exist = (
+        await getDocs(query(cartCollection, where("product", "==", productRef)))
+      ).docs[0];
+      if (exist) {
+        await deleteDoc(doc(db, "cart", exist.id));
       }
-      const updatedItem = { ...db.products[existedIndex] };
-      delete updatedItem.createdAt;
-      db.products.splice(existedIndex, 1, updatedItem);
-      setJSON(db.products);
+      if (!productRef) throw new Error("상품이 없습니다.");
+      await updateDoc(productRef, { createdAt: null });
       return id;
     },
-    deleteHideProduct: (parent, { id }, { db }) => {
-      const existedIndex = db.products.findIndex((item) => item.id === id);
-      if (existedIndex < 0) {
-        throw new Error("존재하지 않는 상품입니다.");
+    deleteHideProduct: async (parent, { id }) => {
+      const productRef = doc(db, "products", id);
+      const cartCollection = collection(db, "cart");
+      const exist = (
+        await getDocs(query(cartCollection, where("product", "==", productRef)))
+      ).docs[0];
+      if (exist) {
+        await deleteDoc(doc(db, "cart", exist.id));
       }
-      db.products.splice(existedIndex, 1);
-      setJSON(db.products);
+      if (!productRef) throw new Error("상품이 없습니다.");
+      await deleteDoc(doc(db, "products", id));
       return id;
     },
   },

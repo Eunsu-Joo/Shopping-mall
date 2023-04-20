@@ -16,6 +16,7 @@ export const GET_CART = gql`
         imageUrl
         price
         title
+        id
       }
       amount
       id
@@ -36,6 +37,7 @@ export const UPDATE_CART = gql`
         imageUrl
         price
         title
+        id
       }
     }
   }

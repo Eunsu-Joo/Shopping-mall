@@ -27,6 +27,7 @@ const Admin = () => {
       },
       {
         getNextPageParam: (lastPage, allPages) => {
+          console.log(allPages);
           // last : 마지막 으로 불러들어온 데이터 , allPages: 누적된 모든 데이터
           return lastPage.products.at(-1)?.id;
         },
@@ -40,14 +41,12 @@ const Admin = () => {
     });
   };
   useEffect(() => {
-    (async () => {
-      if (!intersecting || !hasNextPage || !isSuccess)
-        //   intersection : true => target 도달 탐색중
-        // hasNextPage : 다음페이지 존재 여부
-        // isFetchingNextPage : 타겟에 닿았을 때 true 가 되는데 자세히 모르겠음 ㅠ
-        return;
-      await fetchNextPage();
-    })();
+    if (!intersecting || !isSuccess || isFetchingNextPage || !hasNextPage)
+      //   intersection : true => target 도달 탐색중
+      // hasNextPage : 다음페이지 존재 여부
+      // isFetchingNextPage : 타겟에 닿았을 때 true 가 되는데 자세히 모르겠음 ㅠ
+      return;
+    fetchNextPage();
   }, [intersecting]);
 
   return (
@@ -78,13 +77,14 @@ const Admin = () => {
         <label htmlFor="radio2">삭제된 게시물</label>
       </div>
       <ul className={"adminList"}>
-        {data?.pages.map((item) => {
+        {data?.pages.length === 0 && <li>리스트가 없습니다.</li>}
+        {data?.pages.map((item, index) => {
           return item.products.map((product, index) => {
             return <AdminItem {...product} key={index} />;
           });
         })}
         {/* InfiniteTarget    */}
-        <div ref={fetchTarget} />
+        {checked === "all" && <div ref={fetchTarget} />}
       </ul>
     </div>
   );

@@ -17,6 +17,7 @@ const AdminItem = ({ id, title, imageUrl }: ProductType) => {
         if (confirm("삭제에 성공했습니다.")) {
           await queryClient.invalidateQueries([QueryKeys.ADMIN, "all"]);
           await queryClient.invalidateQueries([QueryKeys.ADMIN, "deleted"]);
+          await queryClient.invalidateQueries([QueryKeys.PRODUCTS]);
         }
       },
     }

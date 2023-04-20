@@ -3,16 +3,17 @@ import { CartsType, CartType, ProductType } from "../../type";
 import { useMutation, useQueryClient } from "react-query";
 import graphqlFetcher from "../../utils/graphqlFetcher";
 import { DELETE_CART, UPDATE_CART } from "../../graphql/cart";
-import { ChangeEvent, ForwardedRef } from "react";
+import React, { ChangeEvent, ForwardedRef, useState } from "react";
 import QueryKeys from "../../constants/queryKeys";
 import Button from "../common/Button";
-import React from "react";
+
 const CartItem = (
-  { id, product, amount }: CartType,
+  { product, amount, id: cartId }: CartType,
   ref: ForwardedRef<HTMLInputElement>
 ) => {
   const queryClient = useQueryClient();
-  const { price, title, imageUrl } = product as ProductType;
+  const { price, title, imageUrl, id } = product as ProductType;
+  const [newAmount, setNewAmount] = useState(amount);
   const { mutate: updateCart } = useMutation(
     ({ id, amount }: { id: string; amount: number }) =>
       graphqlFetcher(UPDATE_CART, { id, amount }),
@@ -63,15 +64,18 @@ const CartItem = (
     }
   );
   const { mutate: deleteCart } = useMutation(
-    (id: string) => graphqlFetcher(DELETE_CART, { id }),
+    (id: string) => graphqlFetcher(DELETE_CART, { id: cartId }),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries([QueryKeys.CART]);
+        if (confirm("삭제에 완료하였습니다.")) {
+          await queryClient.invalidateQueries([QueryKeys.CART]);
+        }
       },
     }
   );
   const handleUpdateAmount = (event: ChangeEvent<HTMLInputElement>) => {
     if (+event.target.value < 1) return;
+    setNewAmount(+event.target.value);
     updateCart({ id, amount: +event.target.value });
   };
 
@@ -104,10 +108,8 @@ const CartItem = (
         <input
           type="number"
           className={"cartInput"}
-          min={1}
-          max={99}
           onChange={handleUpdateAmount}
-          value={amount}
+          value={newAmount}
         />
         <Button type={"button"} onClick={() => deleteCart(id)}>
           삭제

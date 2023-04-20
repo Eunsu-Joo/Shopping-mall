@@ -20,8 +20,9 @@ const AdminAdd = () => {
     (forms: any) => graphqlFetcher(ADD_PRODUCT, { ...forms }),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries([QueryKeys.ADMIN, "all"]);
         if (confirm("등록되었습니다.")) {
+          await queryClient.invalidateQueries([QueryKeys.ADMIN, "all"]);
+          await queryClient.invalidateQueries([QueryKeys.PRODUCTS]);
           return navigate("/admin");
         }
       },

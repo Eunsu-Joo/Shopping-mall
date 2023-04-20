@@ -24,19 +24,19 @@ const ProductPage = () => {
         getNextPageParam: (lastPage, allPages) => {
           //nextPage에 필요한 값을(params) return 해주는 역활
           // 요청을 할때마다 자동으로 실행할꺼임 return 값이 pageParam이 되는거임.
-          // return index, id 등등
+          // return index, id 등
           return lastPage.products.at(-1)?.id; // 마지막 item ID = pageParam
         },
         getPreviousPageParam: (firstPage, allPages) => {},
       }
     );
   useEffect(() => {
-    console.log(intersecting);
     if (!intersecting) return;
     if (!intersecting || !isSuccess || isFetchingNextPage || !hasNextPage)
       return;
     fetchNextPage();
   }, [intersecting]);
+
   // if (isLoading) return <div>Loading...</div>;
   // if (data.products.length === 0)
   //   return <NoResult message={"상품이 없습니다."} />;
@@ -49,7 +49,7 @@ const ProductPage = () => {
     <div className={"container"}>
       <h1>상품페이지</h1>
       <ProductList list={data?.pages || []} />
-      <div ref={fetchMoreRef} />
+      <div ref={fetchMoreRef} style={{ border: "1px solid black" }} />
     </div>
   );
 };

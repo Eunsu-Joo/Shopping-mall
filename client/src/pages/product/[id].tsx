@@ -21,6 +21,8 @@ const ProductDetailPage = () => {
       onSuccess: async () => {
         if (confirm("삭제에 성공했습니다.")) {
           await queryClient.invalidateQueries([QueryKeys.PRODUCTS]);
+          await queryClient.invalidateQueries([QueryKeys.ADMIN, "deleted"]);
+          await queryClient.invalidateQueries([QueryKeys.CART]);
           await navigator("/products");
         }
       },

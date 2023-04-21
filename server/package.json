@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
-  "engines" : {
-    "node": "18.12.1",
-    "npm": "9.6.5"
-  },
   "dependencies": {
     "apollo-server": "^3.11.1",
     "apollo-server-express": "^3.11.1",
@@ -27,7 +23,6 @@
   },
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "start": "nodemon src/index.ts"
   }
 
 }

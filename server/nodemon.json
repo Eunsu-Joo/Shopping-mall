@@ -3,6 +3,6 @@
   "ignore": ["db/**/*"],
   "exec": "ts-node ./src/index.ts",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "development"
   }
 }

@@ -36,6 +36,6 @@ const express = require("express");
       credentials: true,
     },
   });
-  await app.listen({ port: process.env.PORT || 8000 });
-  console.log("server listening on 8000.,..", `port is ${process.env.PORT}`);
+  await app.listen({ port: process.env.$PORT || 8000 });
+  console.log("server listening on 8000.,..", `port is ${process.env.$PORT}`);
 })();

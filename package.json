@@ -6,14 +6,14 @@
   "author": "Eunsu-Joo <julie@1024corp.com>",
   "license": "MIT",
   "private": "true",
-  "engines" : {
-    "node": "18.12.1",
-    "npm": "9.6.5"
-  },
   "workspaces": ["client","server"],
   "scripts": {
     "client": "yarn workspace client dev",
     "server": "yarn workspace server dev",
     "start" : "yarn workspace server dev"
+  },
+  "engines" : {
+    "node": "18.12.1",
+    "npm": "9.6.5"
   }
 }

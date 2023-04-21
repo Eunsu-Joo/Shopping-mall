@@ -1,30 +1,28 @@
-import { DBFile, readDB } from "./dbController";
 import { ApolloServer } from "apollo-server-express";
 import schema from "./schema";
 import resolvers from "./resolvers";
-import { GraphQLError } from "graphql/index";
 
 const express = require("express");
-const formatError = (err: GraphQLError) => {
-  console.error("--- GraphQL Error ---");
-  console.error("Path:", err.path);
-  console.error("Message:", err.message);
-  console.error("Code:", err.extensions.code);
-  console.error("Original Error", err.originalError);
-  return err;
-};
+// const formatError = (err: GraphQLError) => {
+//   console.error("--- GraphQL Error ---");
+//   console.error("Path:", err.path);
+//   console.error("Message:", err.message);
+//   console.error("Code:", err.extensions.code);
+//   console.error("Original Error", err.originalError);
+//   return err;
+// };
 (async () => {
   const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
-    context: {
-      db: {
-        products: readDB(DBFile.PRODUCTS).reverse(),
-        cart: readDB(DBFile.CART),
-      },
-    },
-    debug: false,
-    formatError,
+    // context: {
+    //   db: {
+    //     products: readDB(DBFile.PRODUCTS).reverse(),
+    //     cart: readDB(DBFile.CART),
+    //   },
+    // },
+    // debug: false,
+    // formatError,
   });
 
   const app = express();
@@ -39,6 +37,5 @@ const formatError = (err: GraphQLError) => {
     },
   });
   await app.listen({ port: process.env.PORT || 8000 });
-  console.log(process.env.PORT || 8000);
   console.log("server listening on 8000.,..");
 })();

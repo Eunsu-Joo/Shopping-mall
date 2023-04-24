@@ -5,7 +5,7 @@ import { useInfiniteQuery } from "react-query";
 import QueryKeys from "../../constants/queryKeys";
 import graphqlFetcher from "../../utils/graphqlFetcher";
 import GET_PRODUCTS from "../../graphql/products";
-import { ProductsType } from "../../type";
+import { ProductType } from "../../type";
 import AdminItem from "../../components/admin/adminItem";
 
 const Admin = () => {
@@ -16,7 +16,7 @@ const Admin = () => {
   const navigate = useNavigate();
 
   const { data, isFetchingNextPage, isSuccess, hasNextPage, fetchNextPage } =
-    useInfiniteQuery<{ products: ProductsType }>(
+    useInfiniteQuery<any>(
       [QueryKeys.ADMIN, checked],
       ({ pageParam = "" }) => {
         return graphqlFetcher(GET_PRODUCTS, {
@@ -79,7 +79,7 @@ const Admin = () => {
       <ul className={"adminList"}>
         {data?.pages.length === 0 && <li>리스트가 없습니다.</li>}
         {data?.pages.map((item, index) => {
-          return item.products.map((product, index) => {
+          return item.products.map((product: ProductType, index: number) => {
             return <AdminItem {...product} key={index} />;
           });
         })}

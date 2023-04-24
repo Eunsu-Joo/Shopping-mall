@@ -11,9 +11,8 @@ const AdminEdit = () => {
   const queryClient = useQueryClient();
   const { id } = useParams();
   const navigator = useNavigate();
-  const { data } = useQuery<{ product: ProductType }>(
-    [QueryKeys.PRODUCT, id],
-    () => graphqlFetcher(GET_PRODUCT, { id })
+  const { data } = useQuery<any>([QueryKeys.PRODUCT, id], () =>
+    graphqlFetcher(GET_PRODUCT, { id })
   );
   const { mutate, isLoading } = useMutation(
     (forms: ProductType) => {
@@ -23,8 +22,7 @@ const AdminEdit = () => {
       });
     },
     {
-      onSuccess: async (data) => {
-        console.log(data);
+      onSuccess: async (data: any) => {
         if (confirm("수정이 완료되었습니다.")) {
           if (!data.createdAt)
             await queryClient.invalidateQueries([QueryKeys.ADMIN, "deleted"]);

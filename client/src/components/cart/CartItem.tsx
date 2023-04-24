@@ -14,7 +14,7 @@ const CartItem = (
   const queryClient = useQueryClient();
   const { price, title, imageUrl, id } = product as ProductType;
   const [newAmount, setNewAmount] = useState(amount);
-  const { mutate: updateCart } = useMutation(
+  const { mutate: updateCart } = useMutation<any, any, any, any>(
     ({ id, amount }: { id: string; amount: number }) =>
       graphqlFetcher(UPDATE_CART, { id, amount }),
     {

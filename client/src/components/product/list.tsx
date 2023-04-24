@@ -1,7 +1,11 @@
 import { ProductsType } from "../../type";
 import ProductItem from "./ProductItem";
 
-const ProductList = ({ list }: { list: { products: ProductsType }[] }) => {
+type ProductListProps = {
+  list: { products: ProductsType }[] | null;
+};
+const ProductList = ({ list }: ProductListProps) => {
+  if (!list) return <></>;
   return (
     <>
       <ul className={"grid"}>

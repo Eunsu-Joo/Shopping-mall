@@ -1,11 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import QueryKeys from "../../constants/queryKeys";
 import graphqlFetcher from "../../utils/graphqlFetcher";
 import { GET_CART } from "../../graphql/cart";
 import CartList from "../../components/cart/CartList";
 
 const Cart = () => {
-  let { data, isLoading } = useQuery(
+  let { data, isLoading } = useQuery<any, any, any, any>(
     [QueryKeys.CART],
     () => graphqlFetcher(GET_CART),
     {
@@ -16,7 +16,7 @@ const Cart = () => {
   return (
     <div className={"container"}>
       <h1>결제페이지</h1>
-      <CartList items={data?.cart || []} />
+      <CartList items={(data!.cart as any) || []} />
     </div>
   );
 };

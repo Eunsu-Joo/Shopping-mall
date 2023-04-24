@@ -3,7 +3,6 @@ import QueryKeys from "../../constants/queryKeys";
 import graphqlFetcher from "../../utils/graphqlFetcher";
 import GET_PRODUCTS from "../../graphql/products";
 import ProductList from "../../components/product/list";
-import { ProductsType } from "../../type";
 import { useEffect, useRef } from "react";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 
@@ -12,7 +11,7 @@ const ProductPage = () => {
   const intersecting = useInfiniteScroll(fetchMoreRef);
 
   const { fetchNextPage, isFetchingNextPage, isSuccess, data, hasNextPage } =
-    useInfiniteQuery<{ products: ProductsType }>(
+    useInfiniteQuery<any>(
       [QueryKeys.PRODUCTS],
       ({ pageParam = "" }) => {
         return graphqlFetcher(GET_PRODUCTS, {
@@ -48,7 +47,7 @@ const ProductPage = () => {
   return (
     <div className={"container"}>
       <h1>상품페이지</h1>
-      <ProductList list={data?.pages || []} />
+      <ProductList list={data?.pages ?? null} />
       <div ref={fetchMoreRef} style={{ border: "1px solid black" }} />
     </div>
   );

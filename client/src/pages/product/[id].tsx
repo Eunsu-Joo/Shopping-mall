@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import QueryKeys from "../../constants/queryKeys";
 import { useNavigate, useParams } from "react-router-dom";
-import { ProductType } from "../../type";
 import graphqlFetcher from "../../utils/graphqlFetcher";
 import { DELETE_PRODUCT, GET_PRODUCT } from "../../graphql/products";
 import Button from "../../components/common/Button";
@@ -29,7 +28,9 @@ const ProductDetailPage = () => {
     }
   );
   if (isLoading) return <div>Loading...</div>;
-  const { title, imageUrl, price, description } = data.product as ProductType;
+  const {
+    product: { title, imageUrl, price, description },
+  } = data as any;
 
   return (
     <div

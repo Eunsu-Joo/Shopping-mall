@@ -15,7 +15,7 @@ const Cart = () => {
   if (isLoading) return <p>Loading..</p>;
   return (
     <div className={"container"}>
-      <h1>결제페이지</h1>
+      <h1>장바구니</h1>
       <CartList items={(data!.cart as any) || []} />
     </div>
   );

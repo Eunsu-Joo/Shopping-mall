@@ -1,6 +1,6 @@
 import React from "react";
 
-import DynamicProduct from "./pages/product";
+import DynamicProduct from "./pages";
 import DynamicProductId from "./pages/product/[id]";
 import DynamicCart from "./pages/cart";
 import DynamicPayment from "./pages/payment";
@@ -14,7 +14,7 @@ export const routes = [
     path: "/",
     element: <Layout />,
     children: [
-      { path: "/products", element: <DynamicProduct />, index: true },
+      { path: "/", element: <DynamicProduct />, index: true },
       { path: "/product/:id", element: <DynamicProductId /> },
       { path: "/cart", element: <DynamicCart />, index: true },
       { path: "/payment", element: <DynamicPayment />, index: true },
@@ -26,7 +26,7 @@ export const routes = [
 ];
 
 export const pages = [
-  { route: "/products" },
+  { route: "/" },
   { route: "/product/:id" },
   { route: "/cart" },
   { route: "/payment" },

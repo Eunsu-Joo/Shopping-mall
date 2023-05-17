@@ -1,10 +1,10 @@
 import { useInfiniteQuery } from "react-query";
-import QueryKeys from "../../constants/queryKeys";
-import graphqlFetcher from "../../utils/graphqlFetcher";
-import GET_PRODUCTS from "../../graphql/products";
-import ProductList from "../../components/product/list";
+import QueryKeys from "../constants/queryKeys";
+import graphqlFetcher from "../utils/graphqlFetcher";
+import GET_PRODUCTS from "../graphql/products";
+import ProductList from "../components/product/list";
 import { useEffect, useRef } from "react";
-import useInfiniteScroll from "../../hooks/useInfiniteScroll";
+import useInfiniteScroll from "../hooks/useInfiniteScroll";
 
 const ProductPage = () => {
   const fetchMoreRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ const ProductPage = () => {
     <div className={"container"}>
       <h1>상품페이지</h1>
       <ProductList list={data?.pages ?? null} />
-      <div ref={fetchMoreRef} style={{ border: "1px solid black" }} />
+      <div ref={fetchMoreRef} />
     </div>
   );
 };

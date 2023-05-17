@@ -1,15 +1,13 @@
 import React, { ReactNode } from "react";
 import {
-  Container,
   createTheme,
   CssBaseline,
   GlobalStyles,
   ThemeProvider,
 } from "@mui/material";
-import Header from "../Header";
-import LayoutStyle from "./layout.style";
+import Header from "./Header";
 import { useRecoilValue } from "recoil";
-import { styleModeState } from "../../../recoils/mode";
+import { styleModeState } from "../../recoils/mode";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const mode = useRecoilValue(styleModeState);

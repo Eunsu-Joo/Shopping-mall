@@ -1,1 +1,6 @@
-export const BASE_URL = import.meta.env.VITE_SERVER_URL as string;
+import * as process from "process";
+
+export const BASE_URL =
+  process.env.NODE_ENV == "production"
+    ? "http://localhost:8000"
+    : "https://shoppingmall-back.herokuapp.com";
